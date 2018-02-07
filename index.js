@@ -22,7 +22,8 @@ const data = {
   editNoteWidth: 3,
   displayEditNoteWidth: "3",
   soundShift: 1.37,
-  exportedSheet: ""
+  exportedSheet: "",
+  importedSheet: ""
 };
 
 const vueApp = new Vue({
@@ -79,6 +80,13 @@ const vueApp = new Vue({
     },
     exportSheet: function() {
       this.exportedSheet = exportSheet();
+    },
+    importSheetClick: function() {
+      this.importedSheet = "";
+    },
+    importSheet: function() {
+      currentSheetData = JSON.parse(this.importedSheet);
+      loadSheetToContainer(currentSheetData);
     }
   }
 });
@@ -252,7 +260,6 @@ async function loadData(sheet) {
 }
 
 async function loadSheet(sheet) {
-  clearSheetNoteContainer();
   const response = await fetch('./' + sheet);
   currentSheetData = await response.json();
   loadSheetToContainer(currentSheetData);
@@ -275,6 +282,8 @@ function getYByTime(time) {
 }
 
 function loadSheetToContainer(sheetData) {
+  clearSheetNoteContainer();
+
   // BPM
   for (const bpmDef of sheetData.bpmList) {
     bpmList.push({
