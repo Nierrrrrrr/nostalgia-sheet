@@ -84,7 +84,11 @@ app.stage.addChild(noteContainer);
     loadData("sheet.json");
 
     app.view.addEventListener('mousewheel', (event) => {
-        time += event.deltaY / 1000;
+        time += event.deltaY > 0 ? 0.1 : -0.1;
+    });
+
+    app.view.addEventListener('wheel', (event) => {
+        time += event.deltaY > 0 ? 0.1 : -0.1;
     });
 
     window.addEventListener('keydown', (event) => {
