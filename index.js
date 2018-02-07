@@ -21,7 +21,8 @@ const data = {
   speed: 2,
   editNoteWidth: 3,
   displayEditNoteWidth: "3",
-  soundShift: 1.37
+  soundShift: 1.37,
+  exportedSheet: ""
 };
 
 const vueApp = new Vue({
@@ -29,7 +30,6 @@ const vueApp = new Vue({
   data: data,
   computed: {
     isLeft: function() {
-      console.log(this.editNoteType);
       return this.editNoteType % 2 === 0;
     },
     isShortNote: function() {
@@ -76,6 +76,9 @@ const vueApp = new Vue({
     },
     longNote: function() {
       this.editNoteType = this.editNoteType % 2 + 4;
+    },
+    exportSheet: function() {
+      this.exportedSheet = exportSheet();
     }
   }
 });
@@ -155,7 +158,6 @@ app.stage.addChild(noteContainer);
   });
 
   window.addEventListener('keydown', (event) => {
-    console.log(event.keyCode);
     switch (event.keyCode) {
       case 32:
         playerControlPlaying(!data.playing);
