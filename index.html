@@ -3,10 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <title>Nostalgia Player</title>
+  <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./jquery/jquery-3.3.1.min.js"></script>
+  <script src="./bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="./vue/vue.min.js"></script>
   <script src="./pixi/pixi.min.js"></script>
   <script src="./pixi/pixi-sound.js"></script>
 </head>
 <body>
+<div id="vue-app">
+  <button type="button" class="btn btn-primary" v-on:click="playingControl">{{ playing ? "Pause" : "Play" }}</button>
+  <span>Speed: <input type="text" class="form-control input-speed" @keyup.enter="changeSpeed" placeholder="Speed" v-model="displaySpeed"></span>
+  <button type="button" class="btn btn-primary" v-on:click="editMode = !editMode">{{ editMode ? "編輯模式" : "瀏覽模式" }}</button>
+  <span class="btn-group" role="group">
+    <button type="button" class="btn" v-on:click="leftHand" v-bind:class="{ 'btn-secondary': !isLeft, 'btn-primary': isLeft }">左手</button>
+    <button type="button" class="btn" v-on:click="rightHand" v-bind:class="{ 'btn-secondary': isLeft, 'btn-primary': !isLeft }">右手</button>
+  </span>
+  <span class="btn-group" role="group">
+    <button type="button" class="btn" v-on:click="shortNote" v-bind:class="{ 'btn-secondary': !isShortNote, 'btn-primary': isShortNote }">短鍵</button>
+    <button type="button" class="btn" v-on:click="slideNote" v-bind:class="{ 'btn-secondary': !isSlideNote, 'btn-primary': isSlideNote }">滑鍵</button>
+    <button type="button" class="btn" v-on:click="longNote" v-bind:class="{ 'btn-secondary': !isLongNote, 'btn-primary': isLongNote }">長鍵</button>
+  </span>
+  <span>分拍: <input type="text" class="form-control input-edit-slide" @keyup.enter="changeEditSlide" placeholder="Edit Slide" v-model="displayEditSlide"></span>
+  <span>音符寬度: <input type="text" class="form-control input-note-width" @keyup.enter="changeEditNoteWidth" placeholder="Note Width" v-model="displayEditNoteWidth"></span>
+</div>
 <script src="./index.js"></script>
 </body>
 </html>

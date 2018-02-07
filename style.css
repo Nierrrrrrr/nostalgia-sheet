@@ -1,0 +1,4 @@
+.input-speed, .input-edit-slide, .input-note-width{
+    width: 100px;
+    display: inline-block;
+}
