@@ -136,15 +136,6 @@ app.stage.addChild(noteContainer);
             break;
         }
     });
-
-    document.querySelector("#play").addEventListener('click', () => {
-        playerControlPlaying(!playing);
-    });
-
-    document.querySelector("#changeSlide").addEventListener('click', () => {
-        editSlide = 6;
-        createEditContainer(currentSheetData);
-    });
 })();
 
 function modifyEditSlide(newEditSlide) {
