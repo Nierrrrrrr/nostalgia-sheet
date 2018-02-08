@@ -10,6 +10,7 @@
   <script src="./vue/vue.min.js"></script>
   <script src="./pixi/pixi.min.js"></script>
   <script src="./pixi/pixi-sound.js"></script>
+  <script src="./tone/Tone.min.js"></script>
 </head>
 <body>
 <div id="vue-app">
@@ -29,6 +30,11 @@
   <span>音符寬度: <input type="text" class="form-control input-note-width" @keyup.enter="changeEditNoteWidth" placeholder="Note Width" v-model="displayEditNoteWidth"></span>
   <button type="button" class="btn btn-primary" v-on:click="exportSheet" data-toggle="modal" data-target="#exportSheetModal">匯出</button>
   <button type="button" class="btn btn-primary" v-on:click="importSheetClick" data-toggle="modal" data-target="#importSheetModal">匯入</button>
+  <div>
+    <span>播放時間: <input type="text" class="form-control input-sound-time" placeholder="Time" v-model.number="time"></span>
+    選擇音樂檔案: <input type="file" id="musicFile" @change="onFileChange">
+    <span>音樂偏移: <input type="text" class="form-control input-sound-shift" placeholder="Shift" v-model.number="soundShift"></span>
+  </div>
 
   <div class="modal fade" id="exportSheetModal" tabindex="-1" role="dialog" aria-labelledby="importSheetModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">

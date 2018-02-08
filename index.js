@@ -23,8 +23,11 @@ const data = {
   displayEditNoteWidth: "3",
   soundShift: 1.37,
   exportedSheet: "",
-  importedSheet: ""
+  importedSheet: "",
+  time: 0
 };
+
+let loadedMusic = null;
 
 const vueApp = new Vue({
   el: '#vue-app',
@@ -85,19 +88,57 @@ const vueApp = new Vue({
       this.importedSheet = "";
     },
     importSheet: function() {
-      currentSheetData = JSON.parse(this.importedSheet);
-      loadSheetToContainer(currentSheetData);
+      if (this.importedSheet.length === 0) {
+        currentSheetData = {
+          totalBeats: 500,
+          bpmList: [{
+            durationBeats: null,
+            bpm: 120
+          }],
+          noteList: []
+        };
+        loadSheetToContainer(currentSheetData);
+      } else {
+        currentSheetData = JSON.parse(this.importedSheet);
+        loadSheetToContainer(currentSheetData);
+      }
+    },
+    onFileChange: function(event) {
+      const musicReader = new FileReader();
+      musicReader.readAsArrayBuffer(event.target.files[0]);
+      musicReader.onload = function(e) {
+        const arrayBuffer = e.target.result;
+        var audioContext = window.AudioContext || window.webkitAudioContext;
+        const context = new audioContext();
+        context.decodeAudioData(arrayBuffer, function(buffer) {
+          loadMusic(buffer).then(() => {
+            // TODO: music loaded
+          });
+        });
+      };
     }
   }
 });
 
+function loadMusic(url) {
+  return new Promise((resolve) => {
+    if (loadedMusic) {
+      loadedMusic.unsync();
+      loadedMusic.dispose();
+    }
+
+    loadedMusic = new Tone.Player({
+      url: url,
+      onload: function() {
+        resolve();
+      }
+    }).toMaster().sync().start(0);
+  });
+}
+
 let bpmList = [];
-let time = 0;
 
 let currentSheetData = null;
-
-let soundInstance = null;
-let soundShift = 1.37;
 
 let noteContainerClickDownPosition = null;
 let noteContainerDragSlidePreviewNote = new PIXI.Graphics();
@@ -145,10 +186,10 @@ app.stage.addChild(noteContainer);
     const deltaTime = now - lastTime;
 
     if (data.playing) {
-      time += deltaTime / 1000;
+      data.time += deltaTime / 1000;
     }
 
-    noteContainer.y = 300 + getYByTime(time);
+    noteContainer.y = 300 + getYByTime(data.time);
 
     lastTime = now;
     requestAnimationFrame(tick);
@@ -216,13 +257,29 @@ app.stage.addChild(noteContainer);
   });
 })();
 
+function stopMusic() {
+  Tone.Transport.stop();
+}
+
+function playMusic(start) {
+  if (start >= 0) {
+    Tone.Transport.start("+0", "+" + start);
+  } else {
+    Tone.Transport.start("+" + (-start), "+0")
+  }
+}
+
+function seekMusic(start) {
+  Tone.Transport.seconds = start;
+}
+
 function onWheel(deltaY) {
-  time += deltaY > 0 ? 0.1 : -0.1;
+  data.time += deltaY > 0 ? 0.1 : -0.1;
+  if (data.time < 0) {
+    data.time = 0;
+  }
   if (data.playing) {
-    soundInstance.stop();
-    soundInstance.play({
-      start: time + soundShift
-    });
+    seekMusic(data.time + data.soundShift);
   }
 }
 
@@ -235,11 +292,9 @@ function modifyEditSlide(newEditSlide) {
 function playerControlPlaying(isPlaying) {
   data.playing = isPlaying;
   if (isPlaying) {
-    soundInstance.play({
-      start: time + soundShift
-    });
+    playMusic(data.time + data.soundShift);
   } else {
-    soundInstance.stop();
+    stopMusic();
 }
 }
 
@@ -249,6 +304,9 @@ function exportSheet() {
 
 async function loadData(sheet) {
   // load sound
+  await loadMusic('./lord.ogg');
+  await loadSheet(sheet);
+  /*
   PIXI.sound.Sound.from({
     url: './lord.ogg',
     preload: true,
@@ -257,6 +315,7 @@ async function loadData(sheet) {
       soundInstance = sound;
     }
   });
+  */
 }
 
 async function loadSheet(sheet) {
