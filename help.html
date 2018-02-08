@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome file</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+<div class="stackedit__left">
+  <div class="stackedit__toc">
+
+    <ul>
+      <li><a href="#清空譜面">清空譜面</a></li>
+      <li><a href="#修改譜面長度和-bpm">修改譜面長度和 BPM</a></li>
+      <li><a href="#譜面編輯">譜面編輯</a>
+        <ul>
+          <li><a href="#分拍">分拍</a></li>
+          <li><a href="#刪除音符">刪除音符</a></li>
+          <li><a href="#新增音符">新增音符</a></li>
+          <li><a href="#音符寬度">音符寬度</a></li>
+          <li><a href="#speed">Speed</a></li>
+        </ul>
+      </li>
+      <li><a href="#插入歌曲">插入歌曲</a>
+        <ul>
+          <li><a href="#音樂偏移">音樂偏移</a></li>
+        </ul>
+      </li>
+    </ul>
+
+  </div>
+</div>
+<div class="stackedit__right">
+  <div class="stackedit__html">
+    <h1 id="清空譜面">清空譜面</h1>
+    <p>點選「匯入」之後直接點「讀取」，譜面就清空了</p>
+    <h1 id="修改譜面長度和-bpm">修改譜面長度和 BPM</h1>
+    <p>點選「匯出」，會看到一串字串，像是</p>
+    <pre><code>{"totalBeats":500,"bpmList":[{"durationBeats":null,"bpm":120}],"noteList":[]}
+</code></pre>
+    <p>先把這串文字複製貼到文字編輯器，開始修改。</p>
+    <p>修改 <code>"totalBeats": 500</code>，改成譜面總共的拍子數（你也可以先保留，等譜面做完再看小節線的數字來修改）</p>
+    <p>修改 <code>"bpmList":[{"durationBeats":null,"bpm":120}]</code>，如果沒有變速的話，直接把後面的 <code>"bpm":120</code> 改成你想要的 bpm，例如 bpm 是 154 就改成 <code>"bpm": 154</code></p>
+    <p>如果是變速歌，第一格 <code>durationBeats</code> 填的就是那個 bpm 持續了幾拍</p>
+    <p>假設一開始持續了 8 拍的 bpm 150，然後變成 bpm 200 且持續了 4 拍，最後變成 220 持續到歌曲結束，那就是要填成：</p>
+    <pre><code>"bpmList":[
+ {"durationBeats":8,"bpm":150},
+ {"durationBeats":4, "bpm": 200},
+ {"durationBeats": null, "bpm": 220}
+]
+</code></pre>
+    <p>你可以有換行或空白，不影響</p>
+    <p>修改完之後，把整串文字複製，點「匯入」，把文字貼進去之後按「讀取」就改好了。</p>
+    <p>簡單的說，<strong>目前</strong>修改譜面長度和 BPM 的方法為：「匯出」，把文字複製貼到外面，修改內容，「匯入」，貼上修改過的文字，「讀取」</p>
+    <h1 id="譜面編輯">譜面編輯</h1>
+    <p>最上面有個「瀏覽模式」的按鈕，點一下就變成「編輯模式」，就可以開始編輯譜面。</p>
+    <h2 id="分拍">分拍</h2>
+    <p>分拍的意思是一個拍子會被切成幾個小拍子，所有編輯的音符都會對齊小拍子。</p>
+    <p>修改分拍的方法只要修改數字之後按下 enter，就會變化了。</p>
+    <p>或是可以直接按鍵盤快捷鍵，Q = 1，W = 2，E = 3，R = 4，T = 6，Y = 8，U = 12，I = 16。</p>
+    <h2 id="刪除音符">刪除音符</h2>
+    <p>在原本已經有音符的地方點滑鼠左鍵就可以把音符刪除</p>
+    <h2 id="新增音符">新增音符</h2>
+    <p>首先先用上面的按鈕設定要新增的音符種類，目前有短鍵、滑鍵和長條，以及左手或右手。</p>
+    <p>你可以用快捷鍵快速切換音符種類：<br>
+      A = 左手短鍵，S = 右手短鍵，D = 左手滑鍵，F = 右手滑鍵，G = 左手長條，H = 右手長條</p>
+    <ul>
+      <li>短鍵<br>
+        在譜面上任意處點滑鼠左鍵一下，就會插入短鍵</li>
+      <li>滑鍵 / 長條<br>
+        在譜面上任意處按住滑鼠左鍵代表起點，然後一直拖曳到結束的地方放開左鍵</li>
+    </ul>
+    <h2 id="音符寬度">音符寬度</h2>
+    <p>代表插入的音符寬度，修改完按下 enter 才生效</p>
+    <h2 id="speed">Speed</h2>
+    <p>譜面降落的 speed，有點像是遊戲裡面開的 hi-speed，不影響譜面內容，只影響觀看</p>
+    <h1 id="插入歌曲">插入歌曲</h1>
+    <p>點一下「選擇音樂檔案」，選擇你的歌曲檔案（目前應該是 mp3 或 ogg 都可以，其他的沒試過），就會替換掉現在預設的歌曲。</p>
+    <h2 id="音樂偏移">音樂偏移</h2>
+    <p>因為歌曲不一定會剛好對齊譜面，所以需要設定偏移值，偏移值代表歌曲要從幾秒開始播放，所以假設你的音樂比較慢，你就需要設定一個 &gt; 0 的偏移值，讓歌曲從中間開始播放。相反，如果你的音樂太快了，你需要設定一個 &lt; 0 的偏移值，讓歌曲晚個幾秒再開始播放。</p>
+
+  </div>
+</div>
+</body>
+
+</html>
