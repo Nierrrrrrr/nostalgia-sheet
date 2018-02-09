@@ -1,77 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Nostalgia Player</title>
-  <link rel="stylesheet" href="./bootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./style.css">
-  <script src="./jquery/jquery-3.3.1.min.js"></script>
-  <script src="./bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="./vue/vue.min.js"></script>
-  <script src="./pixi/pixi.min.js"></script>
-  <script src="./pixi/pixi-sound.js"></script>
-  <script src="./tone/Tone.min.js"></script>
-</head>
-<body>
-<div id="vue-app">
-  <button type="button" class="btn btn-primary" v-on:click="playingControl">{{ playing ? "Pause" : "Play" }}</button>
-  <span>Speed: <input type="text" class="form-control input-speed" @keyup.enter="changeSpeed" placeholder="Speed" v-model="displaySpeed"></span>
-  <button type="button" class="btn btn-primary" v-on:click="editMode = !editMode">{{ editMode ? "編輯模式" : "瀏覽模式" }}</button>
-  <span class="btn-group" role="group">
-    <button type="button" class="btn" v-on:click="leftHand" v-bind:class="{ 'btn-secondary': !isLeft, 'btn-primary': isLeft }">左手</button>
-    <button type="button" class="btn" v-on:click="rightHand" v-bind:class="{ 'btn-secondary': isLeft, 'btn-primary': !isLeft }">右手</button>
-  </span>
-  <span class="btn-group" role="group">
-    <button type="button" class="btn" v-on:click="shortNote" v-bind:class="{ 'btn-secondary': !isShortNote, 'btn-primary': isShortNote }">短鍵</button>
-    <button type="button" class="btn" v-on:click="slideNote" v-bind:class="{ 'btn-secondary': !isSlideNote, 'btn-primary': isSlideNote }">滑鍵</button>
-    <button type="button" class="btn" v-on:click="longNote" v-bind:class="{ 'btn-secondary': !isLongNote, 'btn-primary': isLongNote }">長鍵</button>
-  </span>
-  <span>分拍: <input type="text" class="form-control input-edit-slide" @keyup.enter="changeEditSlide" placeholder="Edit Slide" v-model="displayEditSlide"></span>
-  <span>音符寬度: <input type="text" class="form-control input-note-width" @keyup.enter="changeEditNoteWidth" placeholder="Note Width" v-model="displayEditNoteWidth"></span>
-  <button type="button" class="btn btn-primary" v-on:click="exportSheet" data-toggle="modal" data-target="#exportSheetModal">匯出</button>
-  <button type="button" class="btn btn-primary" v-on:click="importSheetClick" data-toggle="modal" data-target="#importSheetModal">匯入</button>
-  <div>
-    <span>播放時間: <input type="text" class="form-control input-sound-time" placeholder="Time" v-model.number="time"></span>
-    選擇音樂檔案: <input type="file" id="musicFile" @change="onFileChange">
-    <span>音樂偏移: <input type="text" class="form-control input-sound-shift" placeholder="Shift" v-model.number="soundShift"></span>
-    <a href="./help.html" target="_blank">使用教學</a>
-  </div>
-
-  <div class="modal fade" id="exportSheetModal" tabindex="-1" role="dialog" aria-labelledby="importSheetModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="importSheetModalLabel">譜面資料</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <textarea class="form-control" rows="20">{{ exportedSheet }}</textarea>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="importSheetModal" tabindex="-1" role="dialog" aria-labelledby="importSheetModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="sheetModalLabel">譜面資料</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <textarea class="form-control" rows="20" v-model="importedSheet"></textarea>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal" v-on:click="importSheet">讀取</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<script src="./index.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <title>Nostalgia Sheet Player</title>
+    <link rel="stylesheet" href="./dist/main.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="./dist/build.js"></script>
+  </body>
 </html>
