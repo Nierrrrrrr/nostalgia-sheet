@@ -518,8 +518,8 @@
       },
       createEditContainer: function (sheetData) {
         // submeasure
+        playerData.submeasureContainer.removeChildren();
         let currentBeat = 0;
-        console.log(sheetData);
         for (const beatDef of sheetData.beatList) {
           let durationBeats = beatDef.durationBeats;
           while(currentBeat < sheetData.totalBeats) {
