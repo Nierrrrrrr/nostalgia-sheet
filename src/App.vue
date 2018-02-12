@@ -46,6 +46,7 @@
             </b-button-group>
             <b-nav-text class="input-text-label">分拍:</b-nav-text><b-form-input type="text" placeholder="Slice" style="width: 70px; margin-right: 10px" v-model.number="editSlide"></b-form-input>
             <b-nav-text class="input-text-label">音符寬度:</b-nav-text><b-form-input type="text" placeholder="Slice" style="width: 70px; margin-right: 10px" v-model.number="editNoteWidth"></b-form-input>
+            <bpm-selector :bpmList="bpmList" @bpmListEdited="bpmListEdited"></bpm-selector>
           </b-nav-form>
         </b-navbar>
       </b-collapse>
@@ -82,6 +83,7 @@
 
 <script>
 import SongSelect from "./SongSelect.vue";
+import BpmSelector from './BpmSelector.vue';
 import SheetPlayer from './SheetPlayer.vue';
 import Loading from './Loading.vue';
 import Tone from 'tone';
@@ -90,10 +92,14 @@ export default {
   components: {
     'song-select': SongSelect,
     'sheet-player': SheetPlayer,
-    'loading': Loading
+    'loading': Loading,
+    'bpm-selector': BpmSelector
   },
   name: 'app',
   methods: {
+    bpmListEdited: function(bpmList) {
+      this.$refs.sheetPlayer.updateBpmList(bpmList);
+    },
     importSheetClicked: function() {
       this.importedSheet = "";
       this.importModal = true;
@@ -180,6 +186,7 @@ export default {
     loadSheetFromData: function(sheetData) {
       this.$refs.sheetPlayer.loadSheetToContainer(sheetData);
       this.soundShift = sheetData.soundShift;
+      this.bpmList = sheetData.bpmList;
     },
     play: function() {
       this.playing = !this.playing;
@@ -221,7 +228,8 @@ export default {
       maxTime: 0,
       exportedSheet: "",
       importedSheet: "",
-      isLoading: false
+      isLoading: false,
+      bpmList: []
     }
   },
   computed: {
@@ -288,7 +296,7 @@ export default {
           break;
       }
     });
-    this.$refs.sheetPlayer.repositionSheet();
+    this.newSheet();
   }
 }
 </script>

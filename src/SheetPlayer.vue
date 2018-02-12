@@ -49,7 +49,7 @@
     NOTE_HEIGHT: 5,
     lastTime: null,
     bpmList: [],
-    currentSheetData: JSON.parse(JSON.stringify(INIT_SHEET_DATA)),
+    currentSheetData: null,
     tickTimer: []
   };
 
@@ -453,23 +453,6 @@
       importSheetClick: function () {
         playerData.importedSheet = "";
       },
-      importSheet: function () {
-        if (playerData.importedSheet.length === 0) {
-          currentSheetData = {
-            totalBeats: 500,
-            soundShift: 0,
-            bpmList: [{
-              durationBeats: null,
-              bpm: 120
-            }],
-            noteList: []
-          };
-          loadSheetToContainer(currentSheetData);
-        } else {
-          currentSheetData = JSON.parse(playerData.importedSheet);
-          loadSheetToContainer(currentSheetData);
-        }
-      },
       onFileChange: function (event) {
         const musicReader = new FileReader();
         musicReader.readAsArrayBuffer(event.target.files[0]);
@@ -601,6 +584,10 @@
       },
       seekMusic: function (time) {
         Tone.Transport.seconds = time;
+      },
+      updateBpmList: function(bpmList) {
+        playerData.currentSheetData.bpmList = bpmList;
+        this.loadSheetToContainer(playerData.currentSheetData);
       }
     },
     watch: {
@@ -651,8 +638,6 @@
       playerData.app.stage.addChild(playerData.pianoLineContainer);
       playerData.app.stage.addChild(playerData.simplePianoLineContainer);
       playerData.app.stage.addChild(this.noteContainer);
-
-      this.updateCurrentSheetData(playerData.currentSheetData);
 
       requestAnimationFrame(this.tick);
 
