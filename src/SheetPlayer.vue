@@ -226,6 +226,14 @@
 
         return noteContainer;
       },
+      addNoteToCurrentSheetData(noteDef) {
+        playerData.currentSheetData.noteList.push(noteDef);
+        this.calculateTickTimeList(playerData.currentSheetData);
+      },
+      removeNoteFromCurrentSheetData(note) {
+        playerData.currentSheetData.noteList = playerData.currentSheetData.noteList.filter(e => e !== note);
+        this.calculateTickTimeList(playerData.currentSheetData);
+      },
       onNoteContainerClick: function (event) {
         if (this.editMode) {
           const position = event.data.getLocalPosition(this.noteContainer);
@@ -236,7 +244,7 @@
           const note = playerData.currentSheetData.noteList.find((e) => e.pos === pos && e.beat === beat);
           if (note) {
             playerData.sheetNoteContainer.removeChild(note.note);
-            playerData.currentSheetData.noteList = playerData.currentSheetData.noteList.filter(e => e !== note);
+            this.removeNoteFromCurrentSheetData(note);
           } else {
             if (this.editNoteType === 0 || this.editNoteType === 1) {
               const noteDef = {
@@ -249,7 +257,7 @@
               const note = this.createNoteByDef(noteDef);
               playerData.sheetNoteContainer.addChild(note);
               noteDef.note = note;
-              playerData.currentSheetData.noteList.push(noteDef);
+              this.addNoteToCurrentSheetData(noteDef);
             } else if (this.editNoteType === 2 || this.editNoteType === 3 || this.editNoteType === 4 || this.editNoteType === 5) {
               playerData.noteContainerClickDownPosition = position;
             }
@@ -291,7 +299,7 @@
             const note = this.createNoteByDef(noteDef);
             playerData.sheetNoteContainer.addChild(note);
             noteDef.note = note;
-            playerData.currentSheetData.noteList.push(noteDef);
+            this.addNoteToCurrentSheetData(noteDef);
             playerData.noteContainerClickDownPosition = null;
             playerData.noteContainerDragSlidePreviewNote.clear();
           }
@@ -416,7 +424,7 @@
         let totalTime = 0;
 
         for (let bpmDef of playerData.currentSheetData.bpmList) {
-          if (bpmDef.durationBeats == null || bpmDef.durationBeats >= beat) {
+          if (bpmDef.durationBeats === null || bpmDef.durationBeats >= beat) {
             totalTime += beat / bpmDef.bpm * 60;
             break;
           } else {
@@ -544,6 +552,16 @@
 
         return measure;
       },
+      calculateTickTimeList(sheetData) {
+        const tickTimeList = new Set();
+        for (const noteDef of sheetData.noteList) {
+          const noteTime = this.getTimeByBeat(noteDef.beat);
+          if (noteDef.durationBeats !== 0 && !tickTimeList.has(noteTime)) {
+            tickTimeList.add(noteTime);
+          }
+        }
+        playerData.tickTimer = Array.from(tickTimeList).sort((x, y) => x - y);
+      },
       loadSheetToContainer: function (sheetData) {
         playerData.sheetNoteContainer.removeChildren();
 
@@ -555,21 +573,14 @@
         playerData.currentSheetData = sheetData;
 
         // notes
-        const tickTimeList = new Set();
         for (const noteDef of sheetData.noteList) {
           const note = this.createNoteByDef(noteDef);
           playerData.sheetNoteContainer.addChild(note);
           noteDef.note = note;
-
-          // set tick sound
-          const noteTime = this.getTimeByBeat(noteDef.beat);
-          if (noteDef.durationBeats !== 0 && !tickTimeList.has(noteTime)) {
-            tickTimeList.add(noteTime);
-          }
         }
 
         // set tick sound
-        playerData.tickTimer = Array.from(tickTimeList).sort((x, y) => x - y);
+        this.calculateTickTimeList(sheetData);
 
         // measure
         this.drawMeasuresBySheetData(sheetData);
