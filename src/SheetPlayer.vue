@@ -40,7 +40,8 @@
     lastTime: null,
     bpmList: [],
     currentSheetData: null,
-    tickTimer: []
+    tickTimer: [],
+    submeasureBeatList: []
   };
 
   const audioContext = window.AudioContext || window.webkitAudioContext;
@@ -409,7 +410,16 @@
         return beat * 60 * this.speed;
       },
       getNoteBeatByY: function (y) {
-        return Math.floor((y / 60 / this.speed) * this.editSlide) / this.editSlide;
+        const beat = y / 60 / this.speed;
+        let result = null;
+        for (const submeasureBeat of playerData.submeasureBeatList) {
+          if (submeasureBeat <= beat) {
+            result = submeasureBeat;
+          } else {
+            break;
+          }
+        }
+        return result;
       },
       getTimeByBeat: function(beat) {
         let totalTime = 0;
@@ -519,27 +529,33 @@
       createEditContainer: function (sheetData) {
         // submeasure
         playerData.submeasureContainer.removeChildren();
+        playerData.submeasureBeatList = [];
         let currentBeat = 0;
         for (const beatDef of sheetData.beatList) {
           let durationBeats = beatDef.durationBeats;
           while(currentBeat < sheetData.totalBeats) {
             let addedBeats = 1;
+            let breakWhile = false;
             if (durationBeats === null) {
               addedBeats = beatDef.beatPerMeasure;
             } else if (durationBeats <= beatDef.beatPerMeasure) {
               addedBeats = durationBeats;
+              breakWhile = true;
             } else if (durationBeats > beatDef.beatPerMeasure) {
               addedBeats = beatDef.beatPerMeasure;
               durationBeats -= beatDef.beatPerMeasure;
             }
 
             const beatPerSubmeasure = 1 / this.editSlide;
+            playerData.submeasureBeatList.push(currentBeat);
             for(let currentSubmeasureBeat = beatPerSubmeasure; currentSubmeasureBeat < addedBeats; currentSubmeasureBeat += beatPerSubmeasure) {
+              console.log(currentBeat + currentSubmeasureBeat);
               playerData.submeasureContainer.addChild(this.createSubMeasureByBeat(currentBeat + currentSubmeasureBeat));
+              playerData.submeasureBeatList.push(currentBeat + currentSubmeasureBeat);
             }
             currentBeat += addedBeats;
 
-            if (addedBeats === durationBeats) {
+            if (breakWhile) {
               break;
             }
           }
