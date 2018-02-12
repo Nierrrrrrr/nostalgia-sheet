@@ -108,6 +108,10 @@ export default {
       this.loadSheetFromData({
         totalBeats: 500,
         soundShift: 0,
+        beatList: [{
+          durationBeats: null,
+          beatPerMeasure: 1
+        }],
         bpmList: [{
           durationBeats: null,
           bpm: 120

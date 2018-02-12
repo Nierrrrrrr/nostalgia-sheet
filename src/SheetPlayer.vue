@@ -6,16 +6,6 @@
   import * as PIXI from 'pixi.js';
   import Tone from 'tone';
 
-  const INIT_SHEET_DATA = {
-    totalBeats: 500,
-    soundShift: 0,
-    bpmList: [{
-      durationBeats: null,
-      bpm: 120
-    }],
-    noteList: []
-  };
-
   const textures = {
     piano: null,
     pianoLine: null,
@@ -488,8 +478,22 @@
       },
       drawMeasuresBySheetData: function (sheetData) {
         playerData.measureContainer.removeChildren();
-        for (let beat = 0; beat !== sheetData.totalBeats; beat++) {
-          playerData.measureContainer.addChild(this.createMeasureByBeat(beat));
+
+        let currentBeat = 0;
+        for (const beatDef of sheetData.beatList) {
+          let durationBeats = beatDef.durationBeats;
+          while(currentBeat < sheetData.totalBeats) {
+            playerData.measureContainer.addChild(this.createMeasureByBeat(currentBeat));
+            if (durationBeats === null) {
+              currentBeat += beatDef.beatPerMeasure;
+            } else if (durationBeats <= beatDef.beatPerMeasure) {
+              currentBeat += durationBeats;
+              break;
+            } else if (durationBeats > beatDef.beatPerMeasure) {
+              currentBeat += beatDef.beatPerMeasure;
+              durationBeats -= beatDef.beatPerMeasure;
+            }
+          }
         }
       },
       createMeasureByBeat: function (beat) {
@@ -514,10 +518,30 @@
       },
       createEditContainer: function (sheetData) {
         // submeasure
-        playerData.submeasureContainer.removeChildren();
-        for (let beat = 0; beat !== sheetData.totalBeats; beat++) {
-          for (let slide = 1; slide !== this.editSlide; slide++) {
-            playerData.submeasureContainer.addChild(this.createSubMeasureByBeat(beat + (1 / this.editSlide * slide)));
+        let currentBeat = 0;
+        console.log(sheetData);
+        for (const beatDef of sheetData.beatList) {
+          let durationBeats = beatDef.durationBeats;
+          while(currentBeat < sheetData.totalBeats) {
+            let addedBeats = 1;
+            if (durationBeats === null) {
+              addedBeats = beatDef.beatPerMeasure;
+            } else if (durationBeats <= beatDef.beatPerMeasure) {
+              addedBeats = durationBeats;
+            } else if (durationBeats > beatDef.beatPerMeasure) {
+              addedBeats = beatDef.beatPerMeasure;
+              durationBeats -= beatDef.beatPerMeasure;
+            }
+
+            const beatPerSubmeasure = 1 / this.editSlide;
+            for(let currentSubmeasureBeat = beatPerSubmeasure; currentSubmeasureBeat < addedBeats; currentSubmeasureBeat += beatPerSubmeasure) {
+              playerData.submeasureContainer.addChild(this.createSubMeasureByBeat(currentBeat + currentSubmeasureBeat));
+            }
+            currentBeat += addedBeats;
+
+            if (addedBeats === durationBeats) {
+              break;
+            }
           }
         }
 
