@@ -321,6 +321,6 @@ export default {
   }
 
   body {
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol", "微軟正黑體";
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Microsoft JhengHei",serif;
   }
 </style>
