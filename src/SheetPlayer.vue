@@ -141,6 +141,7 @@
       },
 
       exportSheet: function() {
+        playerData.currentSheetData.songShift = this.soundShift;
         return JSON.stringify(playerData.currentSheetData, (key, value) => key === "note" || key === "durationTime" ? undefined : value);
       },
 
