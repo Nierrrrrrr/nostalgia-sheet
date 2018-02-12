@@ -19286,6 +19286,16 @@ const INIT_SHEET_DATA = {
   noteList: []
 };
 
+const textures = {
+  piano: null,
+  pianoLine: null,
+  noteLeft: null,
+  noteRight: null,
+  noteLong: null,
+  measure: null,
+  subMeasure: null
+};
+
 const playerData = {
   noteContainerClickDownPosition: null,
   noteContainerDragSlidePreviewNote: new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Graphics"](),
@@ -19311,6 +19321,44 @@ const playerData = {
   bpmList: [],
   currentSheetData: JSON.parse(JSON.stringify(INIT_SHEET_DATA))
 };
+
+function createPianoTexture() {
+  const texture = __WEBPACK_IMPORTED_MODULE_0_pixi_js__["RenderTexture"].create(8, 24);
+  const piano = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Graphics"]();
+  piano.beginFill(playerData.PIANO_COLOR);
+  piano.drawRect(0, 0, 8, 24);
+  piano.endFill();
+  playerData.app.renderer.render(piano, texture);
+  textures.piano = texture;
+}
+
+// const piano = new PIXI.Sprite(textures.piano);
+
+function createMeasureTexture() {
+  const texture = __WEBPACK_IMPORTED_MODULE_0_pixi_js__["RenderTexture"].create(280, 1);
+  const measure = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Graphics"]();
+  measure.beginFill(playerData.MEASURE_LINE_COLOR);
+  measure.drawRect(0, 0, 280, 1);
+  measure.endFill();
+  playerData.app.renderer.render(measure, texture);
+  textures.measure = texture;
+}
+
+function createSubMeasureTexture() {
+  const texture = __WEBPACK_IMPORTED_MODULE_0_pixi_js__["RenderTexture"].create(280, 1);
+  const measure = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Graphics"]();
+  measure.beginFill(playerData.MEASURE_LINE_COLOR);
+  measure.drawRect(0, 0, 280, 1);
+  measure.endFill();
+  playerData.app.renderer.render(measure, texture);
+  textures.subMeasure = texture;
+}
+
+function createTextures() {
+  createPianoTexture();
+  createMeasureTexture();
+  createSubMeasureTexture();
+}
 
 /* harmony default export */ __webpack_exports__["a"] = ({
   name: "sheet-player",
@@ -19372,10 +19420,7 @@ const playerData = {
     },
     drawPiano: function () {
       for (let i = 0; i <= 28; i++) {
-        const piano = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Graphics"]();
-        piano.beginFill(playerData.PIANO_COLOR);
-        piano.drawRect(0, 0, 8, 24);
-        piano.endFill();
+        const piano = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Sprite"](textures.piano);
 
         piano.x = i * 10 + 1;
         piano.y = 306;
@@ -19693,10 +19738,7 @@ const playerData = {
       const y = -this.getNoteYByBeat(beat);
       const measureWithTextContainer = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Container"]();
 
-      const measure = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Graphics"]();
-      measure.beginFill(playerData.MEASURE_LINE_COLOR);
-      measure.drawRect(0, 0, 280, 1);
-      measure.endFill();
+      const measure = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Sprite"](textures.measure);
 
       const measureText = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Text"]((beat + 1).toString(), new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["TextStyle"]({
         fontWeight: 'bold',
@@ -19730,10 +19772,9 @@ const playerData = {
     },
     createSubMeasureByBeat: function (beat) {
       const y = -this.getNoteYByBeat(beat);
-      const measure = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Graphics"]();
-      measure.beginFill(playerData.MEASURE_LINE_COLOR);
-      measure.drawRect(0, y, 280, 0.2);
-      measure.endFill();
+      const measure = new __WEBPACK_IMPORTED_MODULE_0_pixi_js__["Sprite"](textures.subMeasure);
+      measure.scale.y = 0.2;
+      measure.position.set(0, y);
 
       return measure;
     },
@@ -19801,6 +19842,8 @@ const playerData = {
       resolution: 2,
       backgroundColor: 0
     });
+
+    createTextures();
 
     playerData.pianoLineContainer.visible = false;
     playerData.simplePianoLineContainer.visible = false;
@@ -75989,7 +76032,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_SheetPlayer_vue__ = __webpack_require__(91);
 /* unused harmony namespace reexport */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_f241fd1e_hasScoped_true_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_SheetPlayer_vue__ = __webpack_require__(405);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_b962a87a_hasScoped_true_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_SheetPlayer_vue__ = __webpack_require__(405);
 function injectStyle (ssrContext) {
   __webpack_require__(302)
 }
@@ -76004,12 +76047,12 @@ var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-f241fd1e"
+var __vue_scopeId__ = "data-v-b962a87a"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
   __WEBPACK_IMPORTED_MODULE_0__babel_loader_node_modules_vue_loader_lib_selector_type_script_index_0_SheetPlayer_vue__["a" /* default */],
-  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_f241fd1e_hasScoped_true_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_SheetPlayer_vue__["a" /* default */],
+  __WEBPACK_IMPORTED_MODULE_1__node_modules_vue_loader_lib_template_compiler_index_id_data_v_b962a87a_hasScoped_true_buble_transforms_node_modules_vue_loader_lib_selector_type_template_index_0_SheetPlayer_vue__["a" /* default */],
   __vue_template_functional__,
   __vue_styles__,
   __vue_scopeId__,
@@ -76030,7 +76073,7 @@ var content = __webpack_require__(303);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(14)("41194f85", content, true, {});
+var update = __webpack_require__(14)("69cd2e3e", content, true, {});
 
 /***/ }),
 /* 303 */

@@ -16,6 +16,16 @@
     noteList: []
   };
 
+  const textures = {
+    piano: null,
+    pianoLine: null,
+    noteLeft: null,
+    noteRight: null,
+    noteLong: null,
+    measure: null,
+    subMeasure: null
+  };
+
   const playerData = {
     noteContainerClickDownPosition: null,
     noteContainerDragSlidePreviewNote: new PIXI.Graphics(),
@@ -39,8 +49,72 @@
     NOTE_HEIGHT: 5,
     lastTime: null,
     bpmList: [],
-    currentSheetData: JSON.parse(JSON.stringify(INIT_SHEET_DATA))
+    currentSheetData: JSON.parse(JSON.stringify(INIT_SHEET_DATA)),
+    tickTimer: []
   };
+
+  const audioContext = window.AudioContext || window.webkitAudioContext;
+  const tickContext = new audioContext();
+
+  function loadTickSound() {
+    const tickReq = new XMLHttpRequest();
+    tickReq.open('GET', './static/tick.wav');
+    tickReq.responseType = 'arraybuffer';
+    tickReq.onload = function() {
+      tickContext.decodeAudioData(tickReq.response, function(buffer) {
+        playerData.tickSound = buffer;
+      });
+    };
+    tickReq.send();
+  }
+
+  function playTickSound() {
+    const tickSource = tickContext.createBufferSource();
+    tickSource.buffer = playerData.tickSound;
+    tickSource.loop = false;
+    const tickGainNode = tickContext.createGain();
+    tickSource.connect(tickGainNode);
+    tickGainNode.connect(tickContext.destination);
+    tickSource.start(0, 0);
+  }
+
+  function createPianoTexture() {
+    const texture = PIXI.RenderTexture.create(8, 24);
+    const piano = new PIXI.Graphics();
+    piano.beginFill(playerData.PIANO_COLOR);
+    piano.drawRect(0, 0, 8, 24);
+    piano.endFill();
+    playerData.app.renderer.render(piano, texture);
+    textures.piano = texture;
+  }
+
+  // const piano = new PIXI.Sprite(textures.piano);
+
+  function createMeasureTexture() {
+    const texture = PIXI.RenderTexture.create(280, 1);
+    const measure = new PIXI.Graphics();
+    measure.beginFill(playerData.MEASURE_LINE_COLOR);
+    measure.drawRect(0, 0, 280, 1);
+    measure.endFill();
+    playerData.app.renderer.render(measure, texture);
+    textures.measure = texture;
+  }
+
+  function createSubMeasureTexture() {
+    const texture = PIXI.RenderTexture.create(280, 1);
+    const measure = new PIXI.Graphics();
+    measure.beginFill(playerData.MEASURE_LINE_COLOR);
+    measure.drawRect(0, 0, 280, 1);
+    measure.endFill();
+    playerData.app.renderer.render(measure, texture);
+    textures.subMeasure = texture;
+  }
+
+  function createTextures() {
+    createPianoTexture();
+    createMeasureTexture();
+    createSubMeasureTexture();
+  }
 
   export default {
     name: "sheet-player",
@@ -80,6 +154,16 @@
         if (this.playing) {
           newTime += deltaTime / 1000;
           this.updateTime(newTime);
+
+          // play tick
+          for (const tickTime of playerData.tickTimer) {
+            if (tickTime > this.time && tickTime <= newTime) {
+              playTickSound();
+              break;
+            } else if (tickTime > newTime) {
+              break;
+            }
+          }
         }
 
         if (playerData.currentSheetData) {
@@ -102,10 +186,7 @@
       },
       drawPiano: function () {
         for (let i = 0; i <= 28; i++) {
-          const piano = new PIXI.Graphics();
-          piano.beginFill(playerData.PIANO_COLOR);
-          piano.drawRect(0, 0, 8, 24);
-          piano.endFill();
+          const piano = new PIXI.Sprite(textures.piano);
 
           piano.x = i * 10 + 1;
           piano.y = 306;
@@ -339,7 +420,7 @@
             totalTime += beat / bpmDef.bpm * 60;
             break;
           } else {
-            totalTime += bpmDef.duration;
+            totalTime += bpmDef.durationTime;
             beat -= bpmDef.durationBeats;
           }
         }
@@ -355,7 +436,7 @@
             break;
           } else {
             totalY += bpmDef.durationTime * bpmDef.bpm * this.speed;
-            time -= bpmDef.duration;
+            time -= bpmDef.durationTime;
           }
         }
 
@@ -386,7 +467,6 @@
         musicReader.readAsArrayBuffer(event.target.files[0]);
         musicReader.onload = function (e) {
           const arrayBuffer = e.target.result;
-          var audioContext = window.AudioContext || window.webkitAudioContext;
           const context = new audioContext();
           context.decodeAudioData(arrayBuffer, function (buffer) {
             loadMusic(buffer).then(() => {
@@ -424,10 +504,7 @@
         const y = -this.getNoteYByBeat(beat);
         const measureWithTextContainer = new PIXI.Container();
 
-        const measure = new PIXI.Graphics();
-        measure.beginFill(playerData.MEASURE_LINE_COLOR);
-        measure.drawRect(0, 0, 280, 1);
-        measure.endFill();
+        const measure = new PIXI.Sprite(textures.measure);
 
         const measureText = new PIXI.Text((beat + 1).toString(), new PIXI.TextStyle({
           fontWeight: 'bold',
@@ -461,10 +538,9 @@
       },
       createSubMeasureByBeat: function (beat) {
         const y = -this.getNoteYByBeat(beat);
-        const measure = new PIXI.Graphics();
-        measure.beginFill(playerData.MEASURE_LINE_COLOR);
-        measure.drawRect(0, y, 280, 0.2);
-        measure.endFill();
+        const measure = new PIXI.Sprite(textures.subMeasure);
+        measure.scale.y = 0.2;
+        measure.position.set(0, y);
 
         return measure;
       },
@@ -476,12 +552,24 @@
           bpmDef.durationTime = bpmDef.durationBeats ? (60 / bpmDef.bpm) * bpmDef.durationBeats : null;
         }
 
+        playerData.currentSheetData = sheetData;
+
         // notes
+        const tickTimeList = new Set();
         for (const noteDef of sheetData.noteList) {
           const note = this.createNoteByDef(noteDef);
           playerData.sheetNoteContainer.addChild(note);
           noteDef.note = note;
+
+          // set tick sound
+          const noteTime = this.getTimeByBeat(noteDef.beat);
+          if (noteDef.durationBeats !== 0 && !tickTimeList.has(noteTime)) {
+            tickTimeList.add(noteTime);
+          }
         }
+
+        // set tick sound
+        playerData.tickTimer = Array.from(tickTimeList).sort((x, y) => x - y);
 
         // measure
         this.drawMeasuresBySheetData(sheetData);
@@ -502,7 +590,7 @@
       },
       seekMusic: function (time) {
         Tone.Transport.seconds = time;
-      },
+      }
     },
     watch: {
       speed: function (newVal) {
@@ -533,6 +621,8 @@
         backgroundColor: 0
       });
 
+      createTextures();
+
       playerData.pianoLineContainer.visible = false;
       playerData.simplePianoLineContainer.visible = false;
 
@@ -559,6 +649,8 @@
       playerData.app.view.addEventListener(mousewheelevt, (event) => {
         this.onWheel(event.deltaY);
       });
+
+      loadTickSound();
     }
   }
 </script>
