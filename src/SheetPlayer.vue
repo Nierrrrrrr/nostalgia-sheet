@@ -132,7 +132,7 @@
       },
 
       exportSheet: function() {
-        playerData.currentSheetData.songShift = this.soundShift;
+        playerData.currentSheetData.soundShift = this.soundShift;
         return JSON.stringify(playerData.currentSheetData, (key, value) => key === "note" || key === "durationTime" ? undefined : value);
       },
 
@@ -490,10 +490,12 @@
         playerData.measureContainer.removeChildren();
 
         let currentBeat = 0;
+        let measureCount = 0;
         for (const beatDef of sheetData.beatList) {
           let durationBeats = beatDef.durationBeats;
           while(currentBeat < sheetData.totalBeats) {
-            playerData.measureContainer.addChild(this.createMeasureByBeat(currentBeat));
+            measureCount += 1;
+            playerData.measureContainer.addChild(this.createMeasureByBeat(currentBeat, measureCount.toString()));
             if (durationBeats === null) {
               currentBeat += beatDef.beatPerMeasure;
             } else if (durationBeats <= beatDef.beatPerMeasure) {
@@ -506,13 +508,13 @@
           }
         }
       },
-      createMeasureByBeat: function (beat) {
+      createMeasureByBeat: function (beat, text) {
         const y = -this.getNoteYByBeat(beat);
         const measureWithTextContainer = new PIXI.Container();
 
         const measure = new PIXI.Sprite(textures.measure);
 
-        const measureText = new PIXI.Text((beat + 1).toString(), new PIXI.TextStyle({
+        const measureText = new PIXI.Text(text, new PIXI.TextStyle({
           fontWeight: 'bold',
           fill: playerData.MEASURE_LINE_COLOR,
           fontSize: 8
