@@ -551,7 +551,6 @@
             const beatPerSubmeasure = 1 / this.editSlide;
             playerData.submeasureBeatList.push(currentBeat);
             for(let currentSubmeasureBeat = beatPerSubmeasure; currentSubmeasureBeat < addedBeats; currentSubmeasureBeat += beatPerSubmeasure) {
-              console.log(currentBeat + currentSubmeasureBeat);
               playerData.submeasureContainer.addChild(this.createSubMeasureByBeat(currentBeat + currentSubmeasureBeat));
               playerData.submeasureBeatList.push(currentBeat + currentSubmeasureBeat);
             }

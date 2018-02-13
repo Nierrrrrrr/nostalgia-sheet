@@ -39,6 +39,8 @@
 </template>
 
 <script>
+  import SongList from './songList';
+
   export default {
     name: "song-select",
     methods: {
@@ -67,25 +69,7 @@
     data () {
       return {
         songPerRow: 3,
-        songList: [
-          {
-            title: 'Lord=Crossight',
-            subTitle: 'ぺのれり',
-            sheetName: 'lordCrossight',
-            normal: {
-              sheetReady: false,
-              difficulty: 3
-            },
-            hard: {
-              sheetReady: false,
-              difficulty: 8
-            },
-            expert: {
-              sheetReady: true,
-              difficulty: 11
-            }
-          }
-        ]
+        songList: SongList
       }
     },
     computed: {
