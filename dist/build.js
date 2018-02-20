@@ -76258,6 +76258,22 @@ exports.push([module.i, ".text-not-selectable{user-select:none}.empty-card{displ
     sheetReady: true,
     difficulty: 11
   }
+}, {
+  title: 'Carezza',
+  subTitle: 'Osamu Kubota',
+  sheetName: 'carezza',
+  normal: {
+    sheetReady: false,
+    difficulty: 4
+  },
+  hard: {
+    sheetReady: false,
+    difficulty: 8
+  },
+  expert: {
+    sheetReady: true,
+    difficulty: 12
+  }
 }]);
 
 /***/ }),
